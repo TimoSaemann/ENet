@@ -2,6 +2,7 @@
 ENet in Caffe. Coming soon...
 
 ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation
+This work has been published in arXiv: [`ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation`](https://arxiv.org/abs/1606.02147).
 
 
 ## License
