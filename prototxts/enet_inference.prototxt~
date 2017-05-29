@@ -1,0 +1,4622 @@
+name: "enet"
+input: "data"
+input_dim: 1
+input_dim: 3
+input_dim: 1080
+input_dim: 1920
+########## initial block start
+layer {
+  name: "conv0_1"
+  bottom: "data"
+  top: "conv0_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    num_output: 13
+    pad: 1
+    kernel_size: 3
+    stride: 2
+  }
+}
+layer {
+  name: "pool0_1"
+  type: "Pooling"
+  bottom: "data"
+  top: "pool0_1"
+  #top: "pool0_1_mask"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "concat0_1"
+  type: "Concat"
+  bottom: "conv0_1"
+  bottom: "pool0_1"
+  top: "concat0_1"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "bn0_1"
+  type: "BatchNorm"
+  bottom: "concat0_1"
+  top: "bn0_1"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu0_1"
+  type: "ReLU"
+  bottom: "bn0_1"
+  top: "prelu0_1"
+}
+########## initial block end
+########## bottleneck stage 1 start
+####################################### bottleneck stage 1.0 start
+layer {
+  name: "conv1_1"
+  bottom: "prelu0_1"
+  top: "conv1_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    num_output: 4
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "bn1_1"
+  type: "BatchNorm"
+  bottom: "conv1_1"
+  top: "bn1_1"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_1"
+  type: "ReLU"
+  bottom: "bn1_1"
+  top: "prelu1_1"
+}
+layer {
+  name: "conv1_2"
+  bottom: "prelu1_1"
+  top: "conv1_2"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 4
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_2"
+  type: "BatchNorm"
+  bottom: "conv1_2"
+  top: "bn1_2"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_2"
+  type: "ReLU"
+  bottom: "bn1_2"
+  top: "prelu1_2"
+}
+layer {
+  name: "conv1_3"
+  bottom: "prelu1_2"
+  top: "conv1_3"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_3"
+  type: "BatchNorm"
+  bottom: "conv1_3"
+  top: "bn1_3"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop1_1"
+  type: "Dropout"
+  bottom: "bn1_3"
+  top: "drop1_1"
+  dropout_param {
+    dropout_ratio: 0.01
+  }
+}
+layer {
+  name: "pool1_1"
+  type: "Pooling"
+  bottom: "prelu0_1"
+  top: "pool1_1"
+  top: "pool1_1_mask"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv_pool1_1"
+  bottom: "pool1_1"
+  top: "conv_pool1_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "eltwise1_1"
+  type: "Eltwise"
+  bottom: "conv_pool1_1"
+  bottom: "drop1_1"
+  top: "eltwise1_1"
+}
+layer {
+  name: "prelu1_after_eltwise_1"
+  type: "ReLU"
+  bottom: "eltwise1_1"
+  top: "prelu1_after_eltwise_1"
+}
+####################################### bottleneck stage 1.0 end
+####################################### bottleneck stage 1.1 start
+layer {
+  name: "conv1_4"
+  bottom: "prelu1_after_eltwise_1"
+  top: "conv1_4"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_4"
+  type: "BatchNorm"
+  bottom: "conv1_4"
+  top: "bn1_4"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_4"
+  type: "ReLU"
+  bottom: "bn1_4"
+  top: "prelu1_4"
+}
+layer {
+  name: "conv1_5"
+  bottom: "prelu1_4"
+  top: "conv1_5"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_5"
+  type: "BatchNorm"
+  bottom: "conv1_5"
+  top: "bn1_5"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_5"
+  type: "ReLU"
+  bottom: "bn1_5"
+  top: "prelu1_5"
+}
+
+
+layer {
+  name: "conv1_6"
+  bottom: "prelu1_5"
+  top: "conv1_6"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_6"
+  type: "BatchNorm"
+  bottom: "conv1_6"
+  top: "bn1_6"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop1_2"
+  type: "Dropout"
+  bottom: "bn1_6"
+  top: "drop1_2"
+  dropout_param {
+    dropout_ratio: 0.01
+  }
+}
+layer {
+  name: "eltwise1_2"
+  type: "Eltwise"
+  bottom: "eltwise1_1"
+  bottom: "drop1_2"
+  top: "eltwise1_2"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "prelu1_after_eltwise_2"
+  type: "ReLU"
+  bottom: "eltwise1_2"
+  top: "prelu1_after_eltwise_2"
+}
+############################################## bottleneck stage 1.1 end
+############################################## bottleneck stage 1.2 start
+layer {
+  name: "conv1_7"
+  bottom: "prelu1_after_eltwise_2"
+  top: "conv1_7"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_7"
+  type: "BatchNorm"
+  bottom: "conv1_7"
+  top: "bn1_7"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_7"
+  type: "ReLU"
+  bottom: "bn1_7"
+  top: "prelu1_7"
+}
+layer {
+  name: "conv1_8"
+  bottom: "prelu1_7"
+  top: "conv1_8"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_8"
+  type: "BatchNorm"
+  bottom: "conv1_8"
+  top: "bn1_8"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_8"
+  type: "ReLU"
+  bottom: "bn1_8"
+  top: "prelu1_8"
+}
+
+
+layer {
+  name: "conv1_9"
+  bottom: "prelu1_8"
+  top: "conv1_9"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_9"
+  type: "BatchNorm"
+  bottom: "conv1_9"
+  top: "bn1_9"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop1_3"
+  type: "Dropout"
+  bottom: "bn1_9"
+  top: "drop1_3"
+  dropout_param {
+    dropout_ratio: 0.01
+  }
+}
+layer {
+  name: "eltwise1_3"
+  type: "Eltwise"
+  bottom: "eltwise1_2"
+  bottom: "drop1_3"
+  top: "eltwise1_3"
+}
+layer {
+  name: "prelu1_after_eltwise_3"
+  type: "ReLU"
+  bottom: "eltwise1_3"
+  top: "prelu1_after_eltwise_3"
+}
+############################################## bottleneck stage 1.2 end
+############################################## bottleneck stage 1.3 start
+layer {
+  name: "conv1_10"
+  bottom: "prelu1_after_eltwise_3"
+  top: "conv1_10"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_10"
+  type: "BatchNorm"
+  bottom: "conv1_10"
+  top: "bn1_10"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_10"
+  type: "ReLU"
+  bottom: "bn1_10"
+  top: "prelu1_10"
+}
+layer {
+  name: "conv1_11"
+  bottom: "prelu1_10"
+  top: "conv1_11"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_11"
+  type: "BatchNorm"
+  bottom: "conv1_11"
+  top: "bn1_11"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_11"
+  type: "ReLU"
+  bottom: "bn1_11"
+  top: "prelu1_11"
+}
+
+
+layer {
+  name: "conv1_12"
+  bottom: "prelu1_11"
+  top: "conv1_12"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_12"
+  type: "BatchNorm"
+  bottom: "conv1_12"
+  top: "bn1_12"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop1_4"
+  type: "Dropout"
+  bottom: "bn1_12"
+  top: "drop1_4"
+  dropout_param {
+    dropout_ratio: 0.01
+  }
+}
+layer {
+  name: "eltwise1_4"
+  type: "Eltwise"
+  bottom: "eltwise1_3"
+  bottom: "drop1_4"
+  top: "eltwise1_4"
+}
+layer {
+  name: "prelu1_after_eltwise_4"
+  type: "ReLU"
+  bottom: "eltwise1_4"
+  top: "prelu1_after_eltwise_4"
+}
+############################################## bottleneck stage 1.3 end
+############################################## bottleneck stage 1.4 start
+layer {
+  name: "conv1_13"
+  bottom: "prelu1_after_eltwise_4"
+  top: "conv1_13"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_13"
+  type: "BatchNorm"
+  bottom: "conv1_13"
+  top: "bn1_13"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_13"
+  type: "ReLU"
+  bottom: "bn1_13"
+  top: "prelu1_13"
+}
+layer {
+  name: "conv1_14"
+  bottom: "prelu1_13"
+  top: "conv1_14"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_14"
+  type: "BatchNorm"
+  bottom: "conv1_14"
+  top: "bn1_14"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu1_14"
+  type: "ReLU"
+  bottom: "bn1_14"
+  top: "prelu1_14"
+}
+
+
+layer {
+  name: "conv1_15"
+  bottom: "prelu1_14"
+  top: "conv1_15"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn1_15"
+  type: "BatchNorm"
+  bottom: "conv1_15"
+  top: "bn1_15"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop1_5"
+  type: "Dropout"
+  bottom: "bn1_15"
+  top: "drop1_5"
+  dropout_param {
+    dropout_ratio: 0.01
+  }
+}
+layer {
+  name: "eltwise1_5"
+  type: "Eltwise"
+  bottom: "eltwise1_4"
+  bottom: "drop1_5"
+  top: "eltwise1_5"
+}
+layer {
+  name: "prelu1_after_eltwise_5"
+  type: "ReLU"
+  bottom: "eltwise1_5"
+  top: "prelu1_after_eltwise_5"
+}
+########################################## bottleneck stage 2.0 start
+layer {
+  name: "conv2_1"
+  bottom: "prelu1_after_eltwise_5"
+  top: "conv2_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 0
+    num_output: 32
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "bn2_1"
+  type: "BatchNorm"
+  bottom: "conv2_1"
+  top: "bn2_1"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_1"
+  type: "ReLU"
+  bottom: "bn2_1"
+  top: "prelu2_1"
+}
+layer {
+  name: "conv2_2"
+  bottom: "prelu2_1"
+  top: "conv2_2"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_2"
+  type: "BatchNorm"
+  bottom: "conv2_2"
+  top: "bn2_2"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_2"
+  type: "ReLU"
+  bottom: "bn2_2"
+  top: "prelu2_2"
+}
+
+
+layer {
+  name: "conv2_3"
+  bottom: "prelu2_2"
+  top: "conv2_3"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_3"
+  type: "BatchNorm"
+  bottom: "conv2_3"
+  top: "bn2_3"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_1"
+  type: "Dropout"
+  bottom: "bn2_3"
+  top: "drop2_1"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "pool2_1"
+  type: "Pooling"
+  bottom: "prelu1_after_eltwise_5"
+  top: "pool2_1"
+  top: "pool2_1_mask"
+  pooling_param {
+    pool: MAX
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "conv_pool2_1"
+  bottom: "pool2_1"
+  top: "conv_pool2_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "eltwise2_1"
+  type: "Eltwise"
+  bottom: "conv_pool2_1"
+  bottom: "drop2_1"
+  top: "eltwise2_1"
+}
+layer {
+  name: "prelu2_after_eltwise_1"
+  type: "ReLU"
+  bottom: "eltwise2_1"
+  top: "prelu2_after_eltwise_1"
+}
+########################################## bottleneck stage 2.0 end
+########################################## bottleneck stage 2.1 start
+layer {
+  name: "conv2_4"
+  bottom: "prelu2_after_eltwise_1"
+  top: "conv2_4"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_4"
+  type: "BatchNorm"
+  bottom: "conv2_4"
+  top: "bn2_4"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_4"
+  type: "ReLU"
+  bottom: "bn2_4"
+  top: "prelu2_4"
+}
+layer {
+  name: "conv2_5"
+  bottom: "prelu2_4"
+  top: "conv2_5"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_5"
+  type: "BatchNorm"
+  bottom: "conv2_5"
+  top: "bn2_5"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_5"
+  type: "ReLU"
+  bottom: "bn2_5"
+  top: "prelu2_5"
+}
+
+
+layer {
+  name: "conv2_6"
+  bottom: "prelu2_5"
+  top: "conv2_6"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_6"
+  type: "BatchNorm"
+  bottom: "conv2_6"
+  top: "bn2_6"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_2"
+  type: "Dropout"
+  bottom: "bn2_6"
+  top: "drop2_2"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_2"
+  type: "Eltwise"
+  bottom: "prelu2_after_eltwise_1"
+  bottom: "drop2_2"
+  top: "eltwise2_2"
+}
+layer {
+  name: "prelu2_after_eltwise_2"
+  type: "ReLU"
+  bottom: "eltwise2_2"
+  top: "prelu2_after_eltwise_2"
+}
+########################################## bottleneck stage 2.1 end
+########################################## bottleneck stage 2.2 start
+layer {
+  name: "conv2_7"
+  bottom: "prelu2_after_eltwise_2"
+  top: "conv2_7"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_7"
+  type: "BatchNorm"
+  bottom: "conv2_7"
+  top: "bn2_7"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_7"
+  type: "ReLU"
+  bottom: "bn2_7"
+  top: "prelu2_7"
+}
+layer {
+  name: "conv2_8"
+  bottom: "prelu2_7"
+  top: "conv2_8"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 2
+    pad: 2
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_8"
+  type: "BatchNorm"
+  bottom: "conv2_8"
+  top: "bn2_8"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_8"
+  type: "ReLU"
+  bottom: "bn2_8"
+  top: "prelu2_8"
+}
+
+
+layer {
+  name: "conv2_9"
+  bottom: "prelu2_8"
+  top: "conv2_9"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_9"
+  type: "BatchNorm"
+  bottom: "conv2_9"
+  top: "bn2_9"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_3"
+  type: "Dropout"
+  bottom: "bn2_9"
+  top: "drop2_3"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_3"
+  type: "Eltwise"
+  bottom: "eltwise2_2"
+  bottom: "drop2_3"
+  top: "eltwise2_3"
+}
+layer {
+  name: "prelu2_after_eltwise_3"
+  type: "ReLU"
+  bottom: "eltwise2_3"
+  top: "prelu2_after_eltwise_3"
+}
+########################################## bottleneck stage 2.2 end
+########################################## bottleneck stage 2.3 start
+layer {
+  name: "conv2_10"
+  bottom: "prelu2_after_eltwise_3"
+  top: "conv2_10"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_10"
+  type: "BatchNorm"
+  bottom: "conv2_10"
+  top: "bn2_10"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_10"
+  type: "ReLU"
+  bottom: "bn2_10"
+  top: "prelu2_10"
+}
+layer {
+  name: "conv2_11_a"
+  bottom: "prelu2_10"
+  top: "conv2_11_a"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 5
+    kernel_h: 1
+    stride: 1
+  }
+}
+layer {
+  name: "conv2_11_b"
+  bottom: "conv2_11_a"
+  top: "conv2_11_b"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 1
+    kernel_h: 5
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_11"
+  type: "BatchNorm"
+  bottom: "conv2_11_b"
+  top: "bn2_11"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_11"
+  type: "ReLU"
+  bottom: "bn2_11"
+  top: "prelu2_11"
+}
+layer {
+  name: "conv2_12"
+  bottom: "prelu2_11"
+  top: "conv2_12"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_12"
+  type: "BatchNorm"
+  bottom: "conv2_12"
+  top: "bn2_12"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_4"
+  type: "Dropout"
+  bottom: "bn2_12"
+  top: "drop2_4"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_4"
+  type: "Eltwise"
+  bottom: "eltwise2_3"
+  bottom: "drop2_4"
+  top: "eltwise2_4"
+}
+layer {
+  name: "prelu2_after_eltwise_4"
+  type: "ReLU"
+  bottom: "eltwise2_4"
+  top: "prelu2_after_eltwise_4"
+}
+########################################## bottleneck stage 2.3 end
+########################################## bottleneck stage 2.4 start
+layer {
+  name: "conv2_13"
+  bottom: "prelu2_after_eltwise_4"
+  top: "conv2_13"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_13"
+  type: "BatchNorm"
+  bottom: "conv2_13"
+  top: "bn2_13"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_13"
+  type: "ReLU"
+  bottom: "bn2_13"
+  top: "prelu2_13"
+}
+layer {
+  name: "conv2_14"
+  bottom: "prelu2_13"
+  top: "conv2_14"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 4
+    pad: 4
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_14"
+  type: "BatchNorm"
+  bottom: "conv2_14"
+  top: "bn2_14"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_14"
+  type: "ReLU"
+  bottom: "bn2_14"
+  top: "prelu2_14"
+}
+
+
+layer {
+  name: "conv2_15"
+  bottom: "prelu2_14"
+  top: "conv2_15"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_15"
+  type: "BatchNorm"
+  bottom: "conv2_15"
+  top: "bn2_15"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_5"
+  type: "Dropout"
+  bottom: "bn2_15"
+  top: "drop2_5"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_5"
+  type: "Eltwise"
+  bottom: "eltwise2_4"
+  bottom: "drop2_5"
+  top: "eltwise2_5"
+}
+layer {
+  name: "prelu2_after_eltwise_5"
+  type: "ReLU"
+  bottom: "eltwise2_5"
+  top: "prelu2_after_eltwise_5"
+}
+########################################## bottleneck stage 2.4 end
+########################################## bottleneck stage 2.5 start
+layer {
+  name: "conv2_16"
+  bottom: "prelu2_after_eltwise_5"
+  top: "conv2_16"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_16"
+  type: "BatchNorm"
+  bottom: "conv2_16"
+  top: "bn2_16"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_16"
+  type: "ReLU"
+  bottom: "bn2_16"
+  top: "prelu2_16"
+}
+layer {
+  name: "conv2_17"
+  bottom: "prelu2_16"
+  top: "conv2_17"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_17"
+  type: "BatchNorm"
+  bottom: "conv2_17"
+  top: "bn2_17"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_17"
+  type: "ReLU"
+  bottom: "bn2_17"
+  top: "prelu2_17"
+}
+
+
+layer {
+  name: "conv2_18"
+  bottom: "prelu2_17"
+  top: "conv2_18"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_18"
+  type: "BatchNorm"
+  bottom: "conv2_18"
+  top: "bn2_18"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_6"
+  type: "Dropout"
+  bottom: "bn2_18"
+  top: "drop2_6"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_6"
+  type: "Eltwise"
+  bottom: "eltwise2_5"
+  bottom: "drop2_6"
+  top: "eltwise2_6"
+}
+layer {
+  name: "prelu2_after_eltwise_6"
+  type: "ReLU"
+  bottom: "eltwise2_6"
+  top: "prelu2_after_eltwise_6"
+}
+########################################## bottleneck stage 2.5 end
+########################################## bottleneck stage 2.6 start
+layer {
+  name: "conv2_19"
+  bottom: "prelu2_after_eltwise_6"
+  top: "conv2_19"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_19"
+  type: "BatchNorm"
+  bottom: "conv2_19"
+  top: "bn2_19"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_19"
+  type: "ReLU"
+  bottom: "bn2_19"
+  top: "prelu2_19"
+}
+layer {
+  name: "conv2_20"
+  bottom: "prelu2_19"
+  top: "conv2_20"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 8
+    pad: 8
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_20"
+  type: "BatchNorm"
+  bottom: "conv2_20"
+  top: "bn2_20"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_20"
+  type: "ReLU"
+  bottom: "bn2_20"
+  top: "prelu2_20"
+}
+
+
+layer {
+  name: "conv2_21"
+  bottom: "prelu2_20"
+  top: "conv2_21"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_21"
+  type: "BatchNorm"
+  bottom: "conv2_21"
+  top: "bn2_21"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_7"
+  type: "Dropout"
+  bottom: "bn2_21"
+  top: "drop2_7"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_7"
+  type: "Eltwise"
+  bottom: "eltwise2_6"
+  bottom: "drop2_7"
+  top: "eltwise2_7"
+}
+layer {
+  name: "prelu2_after_eltwise_7"
+  type: "ReLU"
+  bottom: "eltwise2_7"
+  top: "prelu2_after_eltwise_7"
+}
+########################################## bottleneck stage 2.6 end
+########################################## bottleneck stage 2.7 start
+layer {
+  name: "conv2_22"
+  bottom: "prelu2_after_eltwise_7"
+  top: "conv2_22"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_22"
+  type: "BatchNorm"
+  bottom: "conv2_22"
+  top: "bn2_22"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_22"
+  type: "ReLU"
+  bottom: "bn2_22"
+  top: "prelu2_22"
+}
+layer {
+  name: "conv2_23_a"
+  bottom: "prelu2_22"
+  top: "conv2_23_a"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 5
+    kernel_h: 1
+    stride: 1
+  }
+}
+layer {
+  name: "conv2_23_b"
+  bottom: "conv2_23_a"
+  top: "conv2_23_b"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 1
+    kernel_h: 5
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_23"
+  type: "BatchNorm"
+  bottom: "conv2_23_b"
+  top: "bn2_23"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_23"
+  type: "ReLU"
+  bottom: "bn2_23"
+  top: "prelu2_23"
+}
+
+
+layer {
+  name: "conv2_24"
+  bottom: "prelu2_23"
+  top: "conv2_24"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_24"
+  type: "BatchNorm"
+  bottom: "conv2_24"
+  top: "bn2_24"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_8"
+  type: "Dropout"
+  bottom: "bn2_24"
+  top: "drop2_8"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_8"
+  type: "Eltwise"
+  bottom: "eltwise2_7"
+  bottom: "drop2_8"
+  top: "eltwise2_8"
+}
+layer {
+  name: "prelu2_after_eltwise_8"
+  type: "ReLU"
+  bottom: "eltwise2_8"
+  top: "prelu2_after_eltwise_8"
+}
+########################################## bottleneck stage 2.7 end
+########################################## bottleneck stage 2.8 start
+layer {
+  name: "conv2_25"
+  bottom: "prelu2_after_eltwise_8"
+  top: "conv2_25"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_25"
+  type: "BatchNorm"
+  bottom: "conv2_25"
+  top: "bn2_25"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_25"
+  type: "ReLU"
+  bottom: "bn2_25"
+  top: "prelu2_25"
+}
+layer {
+  name: "conv2_26"
+  bottom: "prelu2_25"
+  top: "conv2_26"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 16
+    pad: 16
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_26"
+  type: "BatchNorm"
+  bottom: "conv2_26"
+  top: "bn2_26"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu2_26"
+  type: "ReLU"
+  bottom: "bn2_26"
+  top: "prelu2_26"
+}
+layer {
+  name: "conv2_27"
+  bottom: "prelu2_26"
+  top: "conv2_27"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn2_27"
+  type: "BatchNorm"
+  bottom: "conv2_27"
+  top: "bn2_27"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop2_9"
+  type: "Dropout"
+  bottom: "bn2_27"
+  top: "drop2_9"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise2_9"
+  type: "Eltwise"
+  bottom: "eltwise2_8"
+  bottom: "drop2_9"
+  top: "eltwise2_9"
+}
+layer {
+  name: "prelu2_after_eltwise_9"
+  type: "ReLU"
+  bottom: "eltwise2_9"
+  top: "prelu2_after_eltwise_9"
+}
+########################################## bottleneck stage 2.8 end
+########################################## bottleneck stage 3.1 start
+layer {
+  name: "conv3_4"
+  bottom: "prelu2_after_eltwise_9"
+  top: "conv3_4"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_4"
+  type: "BatchNorm"
+  bottom: "conv3_4"
+  top: "bn3_4"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_4"
+  type: "ReLU"
+  bottom: "bn3_4"
+  top: "prelu3_4"
+}
+layer {
+  name: "conv3_5"
+  bottom: "prelu3_4"
+  top: "conv3_5"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_5"
+  type: "BatchNorm"
+  bottom: "conv3_5"
+  top: "bn3_5"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_5"
+  type: "ReLU"
+  bottom: "bn3_5"
+  top: "prelu3_5"
+}
+
+
+layer {
+  name: "conv3_6"
+  bottom: "prelu3_5"
+  top: "conv3_6"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_6"
+  type: "BatchNorm"
+  bottom: "conv3_6"
+  top: "bn3_6"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_2"
+  type: "Dropout"
+  bottom: "bn3_6"
+  top: "drop3_2"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_2"
+  type: "Eltwise"
+  bottom: "prelu2_after_eltwise_9"
+  bottom: "drop3_2"
+  top: "eltwise3_2"
+}
+layer {
+  name: "prelu3_after_eltwise_2"
+  type: "ReLU"
+  bottom: "eltwise3_2"
+  top: "prelu3_after_eltwise_2"
+}
+########################################## bottleneck stage 3.1 end
+########################################## bottleneck stage 3.2 start
+layer {
+  name: "conv3_7"
+  bottom: "prelu3_after_eltwise_2"
+  top: "conv3_7"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_7"
+  type: "BatchNorm"
+  bottom: "conv3_7"
+  top: "bn3_7"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_7"
+  type: "ReLU"
+  bottom: "bn3_7"
+  top: "prelu3_7"
+}
+layer {
+  name: "conv3_8"
+  bottom: "prelu3_7"
+  top: "conv3_8"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 2
+    pad: 2
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_8"
+  type: "BatchNorm"
+  bottom: "conv3_8"
+  top: "bn3_8"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_8"
+  type: "ReLU"
+  bottom: "bn3_8"
+  top: "prelu3_8"
+}
+
+
+layer {
+  name: "conv3_9"
+  bottom: "prelu3_8"
+  top: "conv3_9"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_9"
+  type: "BatchNorm"
+  bottom: "conv3_9"
+  top: "bn3_9"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_3"
+  type: "Dropout"
+  bottom: "bn3_9"
+  top: "drop3_3"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_3"
+  type: "Eltwise"
+  bottom: "eltwise3_2"
+  bottom: "drop3_3"
+  top: "eltwise3_3"
+}
+layer {
+  name: "prelu3_after_eltwise_3"
+  type: "ReLU"
+  bottom: "eltwise3_3"
+  top: "prelu3_after_eltwise_3"
+}
+########################################## bottleneck stage 3.2 end
+########################################## bottleneck stage 3.3 start
+layer {
+  name: "conv3_10"
+  bottom: "prelu3_after_eltwise_3"
+  top: "conv3_10"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_10"
+  type: "BatchNorm"
+  bottom: "conv3_10"
+  top: "bn3_10"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_10"
+  type: "ReLU"
+  bottom: "bn3_10"
+  top: "prelu3_10"
+}
+layer {
+  name: "conv3_11_a"
+  bottom: "prelu3_10"
+  top: "conv3_11_a"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 5
+    kernel_h: 1
+    stride: 1
+  }
+}
+layer {
+  name: "conv3_11_b"
+  bottom: "conv3_11_a"
+  top: "conv3_11_b"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 1
+    kernel_h: 5
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_11"
+  type: "BatchNorm"
+  bottom: "conv3_11_b"
+  top: "bn3_11"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_11"
+  type: "ReLU"
+  bottom: "bn3_11"
+  top: "prelu3_11"
+}
+layer {
+  name: "conv3_12"
+  bottom: "prelu3_11"
+  top: "conv3_12"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_12"
+  type: "BatchNorm"
+  bottom: "conv3_12"
+  top: "bn3_12"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_4"
+  type: "Dropout"
+  bottom: "bn3_12"
+  top: "drop3_4"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_4"
+  type: "Eltwise"
+  bottom: "eltwise3_3"
+  bottom: "drop3_4"
+  top: "eltwise3_4"
+}
+layer {
+  name: "prelu3_after_eltwise_4"
+  type: "ReLU"
+  bottom: "eltwise3_4"
+  top: "prelu3_after_eltwise_4"
+}
+########################################## bottleneck stage 3.3 end
+########################################## bottleneck stage 3.4 start
+layer {
+  name: "conv3_13"
+  bottom: "prelu3_after_eltwise_4"
+  top: "conv3_13"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_13"
+  type: "BatchNorm"
+  bottom: "conv3_13"
+  top: "bn3_13"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_13"
+  type: "ReLU"
+  bottom: "bn3_13"
+  top: "prelu3_13"
+}
+layer {
+  name: "conv3_14"
+  bottom: "prelu3_13"
+  top: "conv3_14"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 4
+    pad: 4
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_14"
+  type: "BatchNorm"
+  bottom: "conv3_14"
+  top: "bn3_14"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_14"
+  type: "ReLU"
+  bottom: "bn3_14"
+  top: "prelu3_14"
+}
+
+
+layer {
+  name: "conv3_15"
+  bottom: "prelu3_14"
+  top: "conv3_15"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_15"
+  type: "BatchNorm"
+  bottom: "conv3_15"
+  top: "bn3_15"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_5"
+  type: "Dropout"
+  bottom: "bn3_15"
+  top: "drop3_5"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_5"
+  type: "Eltwise"
+  bottom: "eltwise3_4"
+  bottom: "drop3_5"
+  top: "eltwise3_5"
+}
+layer {
+  name: "prelu3_after_eltwise_5"
+  type: "ReLU"
+  bottom: "eltwise3_5"
+  top: "prelu3_after_eltwise_5"
+}
+########################################## bottleneck stage 3.4 end
+########################################## bottleneck stage 3.5 start
+layer {
+  name: "conv3_16"
+  bottom: "prelu3_after_eltwise_5"
+  top: "conv3_16"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_16"
+  type: "BatchNorm"
+  bottom: "conv3_16"
+  top: "bn3_16"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_16"
+  type: "ReLU"
+  bottom: "bn3_16"
+  top: "prelu3_16"
+}
+layer {
+  name: "conv3_17"
+  bottom: "prelu3_16"
+  top: "conv3_17"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_17"
+  type: "BatchNorm"
+  bottom: "conv3_17"
+  top: "bn3_17"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_17"
+  type: "ReLU"
+  bottom: "bn3_17"
+  top: "prelu3_17"
+}
+
+
+layer {
+  name: "conv3_18"
+  bottom: "prelu3_17"
+  top: "conv3_18"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_18"
+  type: "BatchNorm"
+  bottom: "conv3_18"
+  top: "bn3_18"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_6"
+  type: "Dropout"
+  bottom: "bn3_18"
+  top: "drop3_6"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_6"
+  type: "Eltwise"
+  bottom: "eltwise3_5"
+  bottom: "drop3_6"
+  top: "eltwise3_6"
+}
+layer {
+  name: "prelu3_after_eltwise_6"
+  type: "ReLU"
+  bottom: "eltwise3_6"
+  top: "prelu3_after_eltwise_6"
+}
+########################################## bottleneck stage 3.5 end
+########################################## bottleneck stage 3.6 start
+layer {
+  name: "conv3_19"
+  bottom: "prelu3_after_eltwise_6"
+  top: "conv3_19"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_19"
+  type: "BatchNorm"
+  bottom: "conv3_19"
+  top: "bn3_19"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_19"
+  type: "ReLU"
+  bottom: "bn3_19"
+  top: "prelu3_19"
+}
+layer {
+  name: "conv3_20"
+  bottom: "prelu3_19"
+  top: "conv3_20"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 8
+    pad: 8
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_20"
+  type: "BatchNorm"
+  bottom: "conv3_20"
+  top: "bn3_20"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_20"
+  type: "ReLU"
+  bottom: "bn3_20"
+  top: "prelu3_20"
+}
+
+
+layer {
+  name: "conv3_21"
+  bottom: "prelu3_20"
+  top: "conv3_21"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_21"
+  type: "BatchNorm"
+  bottom: "conv3_21"
+  top: "bn3_21"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_7"
+  type: "Dropout"
+  bottom: "bn3_21"
+  top: "drop3_7"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_7"
+  type: "Eltwise"
+  bottom: "eltwise3_6"
+  bottom: "drop3_7"
+  top: "eltwise3_7"
+}
+layer {
+  name: "prelu3_after_eltwise_7"
+  type: "ReLU"
+  bottom: "eltwise3_7"
+  top: "prelu3_after_eltwise_7"
+}
+########################################## bottleneck stage 3.6 end
+########################################## bottleneck stage 3.7 start
+layer {
+  name: "conv3_22"
+  bottom: "prelu3_after_eltwise_7"
+  top: "conv3_22"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_22"
+  type: "BatchNorm"
+  bottom: "conv3_22"
+  top: "bn3_22"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_22"
+  type: "ReLU"
+  bottom: "bn3_22"
+  top: "prelu3_22"
+}
+layer {
+  name: "conv3_23_a"
+  bottom: "prelu3_22"
+  top: "conv3_23_a"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 5
+    kernel_h: 1
+    stride: 1
+  }
+}
+layer {
+  name: "conv3_23_b"
+  bottom: "conv3_23_a"
+  top: "conv3_23_b"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 32
+    kernel_w: 1
+    kernel_h: 5
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_23"
+  type: "BatchNorm"
+  bottom: "conv3_23_b"
+  top: "bn3_23"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_23"
+  type: "ReLU"
+  bottom: "bn3_23"
+  top: "prelu3_23"
+}
+
+
+layer {
+  name: "conv3_24"
+  bottom: "prelu3_23"
+  top: "conv3_24"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_24"
+  type: "BatchNorm"
+  bottom: "conv3_24"
+  top: "bn3_24"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_8"
+  type: "Dropout"
+  bottom: "bn3_24"
+  top: "drop3_8"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_8"
+  type: "Eltwise"
+  bottom: "eltwise3_7"
+  bottom: "drop3_8"
+  top: "eltwise3_8"
+}
+layer {
+  name: "prelu3_after_eltwise_8"
+  type: "ReLU"
+  bottom: "eltwise3_8"
+  top: "prelu3_after_eltwise_8"
+}
+########################################## bottleneck stage 3.7 end
+########################################## bottleneck stage 3.8 start
+layer {
+  name: "conv3_25"
+  bottom: "prelu3_after_eltwise_8"
+  top: "conv3_25"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 32
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_25"
+  type: "BatchNorm"
+  bottom: "conv3_25"
+  top: "bn3_25"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_25"
+  type: "ReLU"
+  bottom: "bn3_25"
+  top: "prelu3_25"
+}
+layer {
+  name: "conv3_26"
+  bottom: "prelu3_25"
+  top: "conv3_26"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    dilation: 16
+    pad: 16
+    num_output: 32
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_26"
+  type: "BatchNorm"
+  bottom: "conv3_26"
+  top: "bn3_26"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu3_26"
+  type: "ReLU"
+  bottom: "bn3_26"
+  top: "prelu3_26"
+}
+layer {
+  name: "conv3_27"
+  bottom: "prelu3_26"
+  top: "conv3_27"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 128
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn3_27"
+  type: "BatchNorm"
+  bottom: "conv3_27"
+  top: "bn3_27"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "drop3_9"
+  type: "Dropout"
+  bottom: "bn3_27"
+  top: "drop3_9"
+  dropout_param {
+    dropout_ratio: 0.1
+  }
+}
+layer {
+  name: "eltwise3_9"
+  type: "Eltwise"
+  bottom: "prelu3_after_eltwise_8"
+  bottom: "drop3_9"
+  top: "eltwise3_9"
+}
+layer {
+  name: "prelu3_after_eltwise_9"
+  type: "ReLU"
+  bottom: "eltwise3_9"
+  top: "prelu3_after_eltwise_9"
+}
+########################################## bottleneck stage 3.8 end
+########################################## bottleneck stage 4.0 start
+layer {
+  name: "conv4_1"
+  bottom: "prelu3_after_eltwise_9"
+  top: "conv4_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_1"
+  type: "BatchNorm"
+  bottom: "conv4_1"
+  top: "bn4_1"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu4_1"
+  type: "ReLU"
+  bottom: "bn4_1"
+  top: "prelu4_1"
+}
+layer {
+  name: "deconvolution4_1"
+  type: "Deconvolution"
+  bottom: "prelu4_1"
+  top: "deconvolution4_1"
+  param {
+    lr_mult: 1
+  }
+  convolution_param {
+    pad: 0
+    num_output: 16
+    bias_term: true
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "bn4_2"
+  type: "BatchNorm"
+  bottom: "deconvolution4_1"
+  top: "bn4_2"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu4_2"
+  type: "ReLU"
+  bottom: "bn4_2"
+  top: "prelu4_2"
+}
+layer {
+  name: "conv4_3"
+  bottom: "prelu4_2"
+  top: "conv4_3"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_3"
+  type: "BatchNorm"
+  bottom: "conv4_3"
+  top: "bn4_3"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "conv_before_upsample4_1"
+  bottom: "prelu3_after_eltwise_9"
+  top: "conv_before_upsample4_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_4a"
+  type: "BatchNorm"
+  bottom: "conv_before_upsample4_1"
+  top: "bn4_4a"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "upsample4_1"
+  type: "Upsample"
+  bottom: "bn4_4a"
+  top: "upsample4_1"
+  bottom: "pool2_1_mask"
+  upsample_param {
+    scale: 2
+    #upsample_w: 120
+    #upsample_h: 90
+  }
+}
+layer {
+  name: "eltwise4_1"
+  type: "Eltwise"
+  bottom: "upsample4_1"
+  bottom: "bn4_3"
+  top: "eltwise4_1"
+}
+layer {
+  name: "prelu4_after_eltwise_1"
+  type: "ReLU"
+  bottom: "eltwise4_1"
+  top: "prelu4_after_eltwise_1"
+}
+########################################## bottleneck stage 4.1 end  
+########################################## bottleneck stage 4.2 start
+layer {
+  name: "conv4_4"
+  bottom: "prelu4_after_eltwise_1"
+  top: "conv4_4"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_4"
+  type: "BatchNorm"
+  bottom: "conv4_4"
+  top: "bn4_4"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu4_4"
+  type: "ReLU"
+  bottom: "bn4_4"
+  top: "prelu4_4"
+}
+layer {
+  name: "conv4_5"
+  bottom: "prelu4_4"
+  top: "conv4_5"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_5"
+  type: "BatchNorm"
+  bottom: "conv4_5"
+  top: "bn4_5"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu4_5"
+  type: "ReLU"
+  bottom: "bn4_5"
+  top: "prelu4_5"
+}
+layer {
+  name: "conv4_6"
+  bottom: "prelu4_5"
+  top: "conv4_6"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_6"
+  type: "BatchNorm"
+  bottom: "conv4_6"
+  top: "bn4_6"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "eltwise4_2"
+  type: "Eltwise"
+  bottom: "prelu4_after_eltwise_1"
+  bottom: "bn4_6"
+  top: "eltwise4_2"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "prelu4_after_eltwise_2"
+  type: "ReLU"
+  bottom: "eltwise4_2"
+  top: "prelu4_after_eltwise_2"
+}
+########################################## bottleneck stage 4.2 end  
+########################################## bottleneck stage 4.3 start
+layer {
+  name: "conv4_10"
+  bottom: "prelu4_after_eltwise_2"
+  top: "conv4_10"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_10"
+  type: "BatchNorm"
+  bottom: "conv4_10"
+  top: "bn4_10"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu4_10"
+  type: "ReLU"
+  bottom: "bn4_10"
+  top: "prelu4_10"
+}
+layer {
+  name: "conv4_11"
+  bottom: "prelu4_10"
+  top: "conv4_11"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 16
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_11"
+  type: "BatchNorm"
+  bottom: "conv4_11"
+  top: "bn4_11"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu4_11"
+  type: "ReLU"
+  bottom: "bn4_11"
+  top: "prelu4_11"
+}
+layer {
+  name: "conv4_12"
+  bottom: "prelu4_11"
+  top: "conv4_12"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 64
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn4_12"
+  type: "BatchNorm"
+  bottom: "conv4_12"
+  top: "bn4_12"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "eltwise4_4"
+  type: "Eltwise"
+  bottom: "prelu4_after_eltwise_2"
+  bottom: "bn4_12"
+  top: "eltwise4_3"
+}
+layer {
+  name: "prelu4_after_eltwise_3"
+  type: "ReLU"
+  bottom: "eltwise4_3"
+  top: "prelu4_after_eltwise_3"
+}
+########################################## bottleneck stage 4.3 end  
+########################################## bottleneck stage 5.1 start
+layer {
+  name: "conv5_1"
+  bottom: "prelu4_after_eltwise_3"
+  top: "conv5_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 4
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn5_1"
+  type: "BatchNorm"
+  bottom: "conv5_1"
+  top: "bn5_1"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu5_1"
+  type: "ReLU"
+  bottom: "bn5_1"
+  top: "prelu5_1"
+}
+layer {
+  name: "deconvolution5_1"
+  type: "Deconvolution"
+  bottom: "prelu5_1"
+  top: "deconvolution5_1"
+  param {
+    lr_mult: 1
+  }
+  convolution_param {
+    pad: 0
+    num_output: 4
+    bias_term: true
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "bn5_2"
+  type: "BatchNorm"
+  bottom: "deconvolution5_1"
+  top: "bn5_2"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu5_2"
+  type: "ReLU"
+  bottom: "bn5_2"
+  top: "prelu5_2"
+}
+layer {
+  name: "conv5_3"
+  bottom: "prelu5_2"
+  top: "conv5_3"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn5_3"
+  type: "BatchNorm"
+  bottom: "conv5_3"
+  top: "bn5_3"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "conv_before_upsample5_1"
+  bottom: "prelu4_after_eltwise_3"
+  top: "conv_before_upsample5_1"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn5_4a"
+  type: "BatchNorm"
+  bottom: "conv_before_upsample5_1"
+  top: "bn5_4a"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "upsample5_1"
+  type: "Upsample"
+  bottom: "bn5_4a"
+  top: "upsample5_1"
+  bottom: "pool1_1_mask"
+  upsample_param {
+    scale: 2
+    #upsample_w: 120
+    #upsample_h: 90
+  }
+}
+layer {
+  name: "eltwise5_1"
+  type: "Eltwise"
+  bottom: "upsample5_1"
+  bottom: "bn5_3"
+  top: "eltwise5_1"
+}
+layer {
+  name: "prelu5_after_eltwise_1"
+  type: "ReLU"
+  bottom: "eltwise5_1"
+  top: "prelu5_after_eltwise_1"
+}
+########################################## bottleneck stage 5.1 end
+########################################## bottleneck stage 5.2 start
+layer {
+  name: "conv5_4"
+  bottom: "prelu5_after_eltwise_1"
+  top: "conv5_4"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 4
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn5_4"
+  type: "BatchNorm"
+  bottom: "conv5_4"
+  top: "bn5_4"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu5_4"
+  type: "ReLU"
+  bottom: "bn5_4"
+  top: "prelu5_4"
+}
+layer {
+  name: "conv5_5"
+  bottom: "prelu5_4"
+  top: "conv5_5"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_filler {
+      type: "constant"
+    }
+    pad: 1
+    num_output: 4
+    kernel_size: 3
+    stride: 1
+  }
+}
+layer {
+  name: "bn5_5"
+  type: "BatchNorm"
+  bottom: "conv5_5"
+  top: "bn5_5"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "prelu5_5"
+  type: "ReLU"
+  bottom: "bn5_5"
+  top: "prelu5_5"
+}
+layer {
+  name: "conv5_6"
+  bottom: "prelu5_5"
+  top: "conv5_6"
+  type: "Convolution"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  convolution_param {
+    weight_filler {
+      type: "msra"
+    }
+    bias_term: false
+    num_output: 16
+    kernel_size: 1
+    stride: 1
+  }
+}
+layer {
+  name: "bn5_6"
+  type: "BatchNorm"
+  bottom: "conv5_6"
+  top: "bn5_6"
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  param {
+    lr_mult: 0
+  }
+  batch_norm_param {
+    eps: 1e-3
+    use_global_stats: true
+  }
+}
+layer {
+  name: "eltwise5_2"
+  type: "Eltwise"
+  bottom: "prelu5_after_eltwise_1"
+  bottom: "bn5_6"
+  top: "eltwise5_2"
+  concat_param {
+    axis: 1
+  }
+}
+layer {
+  name: "prelu5_after_eltwise_2"
+  type: "ReLU"
+  bottom: "eltwise5_2"
+  top: "prelu5_after_eltwise_2"
+}
+########################################## bottleneck stage 5.2 end
+########################################## bottleneck stage 6 start
+layer {
+  name: "deconvolution6_1"
+  type: "Deconvolution"
+  bottom: "prelu5_after_eltwise_2"
+  top: "deconvolution6_1"
+  param {
+    lr_mult: 1
+  }
+  convolution_param {
+    engine: 2
+    pad: 0
+    num_output: 12
+    bias_term: true
+    kernel_size: 2
+    stride: 2
+  }
+}
+layer {
+  name: "argmax"
+  type: "ArgMax"
+  bottom: "deconvolution6_1"
+  top: "argmax"
+  argmax_param {
+    axis: 1
+  }
+}
+
+

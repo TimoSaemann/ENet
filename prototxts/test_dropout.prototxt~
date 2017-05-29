@@ -1,0 +1,51 @@
+name: "test_py_layer"
+#force_backward: true
+layer {
+  name: "prelu1_2_2"
+  type: "DummyData"
+  top: "prelu1_2_2"
+  dummy_data_param {
+    shape {
+      dim: 1
+      dim: 5
+      dim: 10
+      dim: 10
+    }
+  data_filler { type: 'gaussian' std: 1 }
+  #data_filler { type: 'constant' } 
+  }
+}
+layer {
+  name: "prelu1_2_3"
+  type: "DummyData"
+  top: "prelu1_2_3"
+  dummy_data_param {
+    shape {
+      dim: 1
+      dim: 1
+      dim: 10
+      dim: 10
+    }
+  data_filler { type: 'gaussian' std: 1 }
+  #data_filler { type: 'constant' } 
+  }
+}
+layer {
+  name: "tested_py_layer"
+  type: "Python"
+  bottom: "prelu1_2_2"
+  top: "drop1_2_3"
+  propagate_down: true
+  python_param {
+    module: "spatial_dropout"
+    layer: "SpatialDropoutLayer"
+    param_str: '{"phase":"TRAIN","p":"0.1"}'
+  }
+}
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "drop1_2_3"
+  bottom: "prelu1_2_3"
+  top: "loss"
+}
