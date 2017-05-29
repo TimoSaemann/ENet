@@ -23,7 +23,7 @@ Please make sure that the python layer (spatial_dropout.py) is defined in your P
 
 ## Preparation
 
-Please download the fine labeled Cityscapes dataset __leftImg8bit_trainvaltest.zip (11GB)__ and the corresponding ground truth __gtFine_trainvaltest.zip (241MB)__ from the [Cityscapes website](`https://www.cityscapes-dataset.com`)
+Please download the fine labeled Cityscapes dataset __leftImg8bit_trainvaltest.zip (11GB)__ and the corresponding ground truth __gtFine_trainvaltest.zip (241MB)__ from the [Cityscapes website](`https://www.cityscapes-dataset.com`).
 The input data layer which is used requires a text file of white-space separated paths to the images and the corresponding ground truth.
 For this reason, please modify `ENet/dataset/train_fine_cityscapes.txt` to your absolute path of the data.
 
@@ -49,14 +49,14 @@ First, create the prototxt file `enet_train_encoder.prototxt` by running:
 
 	$ python create_enet_prototxt.py --source ENet/dataset/train_fine_cityscapes.txt --mode train_encoder
 	
-This prototxt file includes the encoder architecture of ENet with some default settings you can customize according your needs. For example, the input images are resized to 1024x512 for GPU memory reason. For more details have a look in the prototxt file or the python file.
+This prototxt file includes the encoder architecture of ENet with some default settings you can customize according your needs. For example, the input images are resized to 1024x512, because of GPU memory restrictions. For more details have a look in the prototxt file or in the python file.
 
 The next step is optional:
-To improve the quality of ENet prediction in small classes (traffic sign, pole, etc.), you can add __class_weighting__ to the __SoftmaxWithLoss__ layer. 
+To improve the quality of ENet predictions in small classes (traffic sign, pole, etc.), you can add __class_weighting__ to the __SoftmaxWithLoss__ layer. 
 
 	$ python calculate_class_weighting.py --source ENet/dataset/train_fine_cityscapes.txt --num_classes 19
 	
-Copy the __class_weightings__ from the terminal in `enet_train_encoder.prototxt` and `enet_train_encoder_decoder.prototxt` under __weight_by_label_freqs__ and set this flag from false to true. 
+Copy the __class_weightings__ from the terminal in the `enet_train_encoder.prototxt` and `enet_train_encoder_decoder.prototxt` under __weight_by_label_freqs__ and set this flag from __false__ to __true__. 
  
 Now you are ready to start the training:
 
@@ -74,7 +74,7 @@ After about 100 epochs you should see it converge (2975 images * 100 epochs / ba
 
 The Batch Normalisation layers [1] in ENet shift the input feature maps according to their mean and variance
 statistics for each mini batch during training. At test time we must use the statistics for the entire dataset.
-For this reason run __compute_bn_statistics.py__ to calculate the new weights called __test_weights.caffemodel__.
+For this reason run __compute_bn_statistics.py__ to calculate the new weights called __test_weights.caffemodel__:
 
 	$ python compute_bn_statistics.py 	ENet/prototxt/enet_train_encoder_decoder.prototxt \
 						ENet/snapshots_decoder/NAME.caffemodel \
