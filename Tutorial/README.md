@@ -44,18 +44,24 @@ The training of ENet is performed in two stages:
 ### Let's start with the encoder training:
 
 First, create the prototxt file `enet_train_encoder.prototxt` by running:
+
 	$ python create_enet_prototxt.py --source ENet/dataset/train_fine_cityscapes.txt --mode train_encoder
+	
 This prototxt file includes the encoder architecture of ENet with some default settings you can customize according your needs. For example, the input images are resized to 1024x512 for GPU memory reason. For more details have a look in the prototxt file or the python file.
 
 The next step is optional:
 To improve the quality of ENet prediction in small classes (traffic sign, pole, etc.), you can add __class_weighting__ to the __SoftmaxWithLoss__ layer. 
+
 	$ python calculate_class_weighting.py --source ENet/dataset/train_fine_cityscapes.txt --num_classes 19
+	
 Copy the __class_weightings__ from the terminal in `enet_train_encoder.prototxt` and `enet_train_encoder_decoder.prototxt` under __weight_by_label_freqs__ and set this flag from false to true. 
  
 Now you are ready to start the training:
+
 	$ ENet/caffe-enet/build/tools/caffe train -solver /ENet/prototxts/enet_solver_encoder.prototxt
 
 After training is finished you can continue with the training of encoder + decoder:
+
 	$ ENet/caffe-enet/build/tools/caffe train -solver /ENet/prototxts/enet_solver_encoder_decoder.prototxt -weights ENet/snapshots_encoder/NAME.caffemodel
 
 Replace the place holder __NAME__ to the name of your weights.
@@ -67,7 +73,8 @@ After about 100 epochs you should see it converge (2975 images * 100 epochs / ba
 The Batch Normalisation layers [1] in ENet shift the input feature maps according to their mean and variance
 statistics for each mini batch during training. At test time we must use the statistics for the entire dataset.
 For this reason run __compute_bn_statistics.py__ to calculate the new weights called __test_weights.caffemodel__.
-	$ python compute_bn_statistics.py ENet/prototxt/enet_train_encoder_decoder.prototxt \
+
+	$ python compute_bn_statistics.py 	ENet/prototxt/enet_train_encoder_decoder.prototxt \
 						ENet/snapshots_decoder/NAME.caffemodel \
 						ENet/weights_bn/ 
 
@@ -75,6 +82,7 @@ The script saves the final test weights in the output directory "ENet/weights_bn
 
 For inference batch normalization and dropout layer can be merged into convolutional kernels, to
 speed up the network. You can do this by running:
+
 	$ python BN-absorber-enet.py 	--model ENet/prototxts/enet_deploy.prototxt \
 					--weights ENet/test_weights.caffemodel \
 					--out_dir ENet/weights_bn_merged/
@@ -84,6 +92,7 @@ It also deletes the corresponding batch normalization and dropout layers from th
 ### Visualize the prediction with python
 
 You can visualize the prediction of ENet by running:
+
 	$ python test_segmentation.py 	--model ENet/final_model_and_weigths/bn_conv_merged_model.prototxt \
 					--weights ENet/final_model_and_weigths/bn_conv_merged_model.caffemodel \
 					--colours /ENet/scripts/cityscapes19.png --input_image ENet/example_image/munich_000000_000019_leftImg8bit.png \
@@ -93,6 +102,7 @@ You can visualize the prediction of ENet by running:
 ### Visualize the prediction with C++
 
 If you like to visualize the prediction of ENet with C++ code:
+
 	$ cd ENet/caffe-enet/build/examples/ENet_with_C++
 	$ ./test_segmentation 	ENet/final_model_weights/bn_conv_merged_model.prototxt \
 				ENet/final_model_weights/bn_conv_merged_model.caffemodel \
