@@ -1,0 +1,3 @@
+[submodule "caffe-enet"]
+	path = caffe-enet
+	url = https://github.com/TimoSaemann/caffe-enet.git
