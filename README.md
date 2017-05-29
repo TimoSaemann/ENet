@@ -1,6 +1,6 @@
 # ENet in Caffe
 
-![sample](example_image/image_enet.png)
+[[https://github.com/TimoSaemann/ENet/example_image/image_enet.png|alt=octocat]]
 
 ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation
 
