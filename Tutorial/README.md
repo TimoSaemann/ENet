@@ -14,9 +14,11 @@ Please compile the modified Caffe framework __caffe-enet__ (It supports all nece
 	$ make all -j8 && make pycaffe
 
 You can also consult the generic ['Caffe installation guide'](http://caffe.berkeleyvision.org/installation.html) for further help. If you like to compile with __make__, please uncomment the following line in the Makefile.config 
+
 	$ WITH_PYTHON_LAYER := 1 
 	
 Please make sure that the python layer (spatial_dropout.py) is defined in your PYTHONPATH:
+
 	$ export PYTHONPATH="$CAFFE_PATH/python:$PYTHONPATH"
 
 ## Preparation
