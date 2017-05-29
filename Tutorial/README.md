@@ -67,7 +67,7 @@ After about 100 epochs you should see it converge (2975 images * 100 epochs / ba
 The Batch Normalisation layers [1] in ENet shift the input feature maps according to their mean and variance
 statistics for each mini batch during training. At test time we must use the statistics for the entire dataset.
 For this reason run __compute_bn_statistics.py__ to calculate the new weights called __test_weights.caffemodel__.
-	$ python compute_bn_statistics.py 	ENet/prototxt/enet_train_encoder_decoder.prototxt \
+	$ python compute_bn_statistics.py ENet/prototxt/enet_train_encoder_decoder.prototxt \
 						ENet/snapshots_decoder/NAME.caffemodel \
 						ENet/weights_bn/ 
 
