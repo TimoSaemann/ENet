@@ -13,7 +13,7 @@ Please compile the modified Caffe framework __caffe-enet__ (It supports all nece
 	$ cmake ..
 	$ make all -j8 && make pycaffe
 
-You can also consult the generic ['Caffe installation guide'](http://caffe.berkeleyvision.org/installation.html) for further help. If you like to compile with __make__, please uncomment the following line in the Makefile.config 
+You can also consult the generic [Caffe installation guide](http://caffe.berkeleyvision.org/installation.html) for further help. If you like to compile with __make__, please uncomment the following line in the Makefile.config 
 
 	$ WITH_PYTHON_LAYER := 1 
 	
@@ -23,7 +23,7 @@ Please make sure that the python layer (spatial_dropout.py) is defined in your P
 
 ## Preparation
 
-Please download the fine labeled Cityscapes dataset __leftImg8bit_trainvaltest.zip (11GB)__ and the corresponding ground truth __gtFine_trainvaltest.zip (241MB)__ from the ['Cityscapes website'](https://www.cityscapes-dataset.com).
+Please download the fine labeled Cityscapes dataset __leftImg8bit_trainvaltest.zip (11GB)__ and the corresponding ground truth __gtFine_trainvaltest.zip (241MB)__ from the [Cityscapes website](https://www.cityscapes-dataset.com).
 The input data layer which is used requires a text file of white-space separated paths to the images and the corresponding ground truth.
 For this reason, please modify `ENet/dataset/train_fine_cityscapes.txt` to your absolute path of the data.
 
@@ -65,7 +65,7 @@ Now you are ready to start the training:
 If the GPU memory is not enough (error == cudasuccess), reduce the batch size in `ENet/prototxt/enet_train_encoder_decoder.prototxt`.
 After training is finished you can continue with the training of encoder + decoder:
 
-	$ ENet/caffe-enet/build/tools/caffe train -solver /ENet/prototxts/enet_solver_encoder_decoder.prototxt -weights ENet/snapshots_encoder/NAME.caffemodel
+	$ ENet/caffe-enet/build/tools/caffe train -solver ENet/prototxts/enet_solver_encoder_decoder.prototxt -weights ENet/weights/snapshots_encoder/NAME.caffemodel
 
 Replace the place holder __NAME__ to the name of your weights.
 
@@ -78,17 +78,17 @@ statistics for each mini batch during training. At test time we must use the sta
 For this reason run __compute_bn_statistics.py__ to calculate the new weights called __test_weights.caffemodel__:
 
 	$ python compute_bn_statistics.py 	ENet/prototxt/enet_train_encoder_decoder.prototxt \
-						ENet/snapshots_decoder/NAME.caffemodel \
-						ENet/weights_bn/ 
+						ENet/weights/snapshots_decoder/NAME.caffemodel \
+						ENet/weights/weights_bn/ 
 
-The script saves the final test weights in the output directory "ENet/weights_bn/test_weights.caffemodel"
+The script saves the __bn-weights__ in the output directory `ENet/weights/weights_bn/bn_weights.caffemodel`.
 
 For inference batch normalization and dropout layer can be merged into convolutional kernels, to
 speed up the network. You can do this by running:
 
 	$ python BN-absorber-enet.py 	--model ENet/prototxts/enet_deploy.prototxt \
-					--weights ENet/test_weights.caffemodel \
-					--out_dir ENet/weights_bn_merged/
+					--weights ENet/weights/bn_weights.caffemodel \
+					--out_dir ENet/final_model_weigths/
 
 It also deletes the corresponding batch normalization and dropout layers from the prototxt file. The final model (prototxt file) and weights are saved in the folder __final_model_and_weights__. 
 
@@ -96,9 +96,10 @@ It also deletes the corresponding batch normalization and dropout layers from th
 
 You can visualize the prediction of ENet by running:
 
-	$ python test_segmentation.py 	--model ENet/final_model_and_weigths/bn_conv_merged_model.prototxt \
-					--weights ENet/final_model_and_weigths/bn_conv_merged_model.caffemodel \
-					--colours /ENet/scripts/cityscapes19.png --input_image ENet/example_image/munich_000000_000019_leftImg8bit.png \
+	$ python test_segmentation.py 	--model ENet/final_model_weigths/bn_conv_merged_model.prototxt \
+					--weights ENet/final_model_weigths/bn_conv_merged_model.caffemodel \
+					--colours /ENet/scripts/cityscapes19.png \
+					--input_image ENet/example_image/munich_000000_000019_leftImg8bit.png \
 					--out_dir /ENet/example_image/ 
 
 

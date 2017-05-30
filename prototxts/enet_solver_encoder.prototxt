@@ -13,7 +13,7 @@ momentum: 0.9
 max_iter: 75000
 weight_decay: 0.0002
 snapshot: 10000
-snapshot_prefix: "ENet/snapshots_encoder/enet"  # Change this to the absolute path to where you wish to output solver snapshots
+snapshot_prefix: "ENet/weights/snapshots_encoder/enet"  # Change this to the absolute path to where you wish to output solver snapshots
 solver_mode: GPU
 solver_type: ADAM
 momentum2: 0.999
