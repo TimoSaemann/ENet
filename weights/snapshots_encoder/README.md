@@ -1,1 +1,1 @@
-# The snapshots of the encoder training are saved here
+The snapshots of the encoder training are saved here.
