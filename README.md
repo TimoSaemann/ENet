@@ -4,7 +4,7 @@
 
 ## Tutorial
 
-For a detailed introduction on how to train and test ENet please see the [tutorial](https://github.com/TimoSaemann/ENet/tree/master/Tutorial)
+For a detailed introduction on how to train and test ENet please see the [tutorial](https://github.com/TimoSaemann/ENet/tree/master/Tutorial).
 
 
 
