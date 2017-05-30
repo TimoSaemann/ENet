@@ -23,15 +23,15 @@ Please make sure that the python layer (spatial_dropout.py) is defined in your P
 
 ## Preparation
 
-Please download the fine labeled Cityscapes dataset __leftImg8bit_trainvaltest.zip (11GB)__ and the corresponding ground truth __gtFine_trainvaltest.zip (241MB)__ from the [Cityscapes website](`https://www.cityscapes-dataset.com`).
+Please download the fine labeled Cityscapes dataset __leftImg8bit_trainvaltest.zip (11GB)__ and the corresponding ground truth __gtFine_trainvaltest.zip (241MB)__ from the ['Cityscapes website'](https://www.cityscapes-dataset.com).
 The input data layer which is used requires a text file of white-space separated paths to the images and the corresponding ground truth.
 For this reason, please modify `ENet/dataset/train_fine_cityscapes.txt` to your absolute path of the data.
 
 Next, change __caffe_root__ to the absolute path of __caffe-enet__ in the following scripts:
- - BN-absorber-enet.py
- - compute_bn_statistics.py
- - create_enet_prototxt.py
- - test_segmentation.py
+ - ENet/scripts/BN-absorber-enet.py
+ - ENet/scripts/compute_bn_statistics.py
+ - ENet/scripts/create_enet_prototxt.py
+ - ENet/scripts/test_segmentation.py
 
 Furthermore, change all relative paths to the absolute path in both solver files:
  - ENet/prototxts/enet_solver_encoder.prototxt
@@ -62,6 +62,7 @@ Now you are ready to start the training:
 
 	$ ENet/caffe-enet/build/tools/caffe train -solver /ENet/prototxts/enet_solver_encoder.prototxt
 
+If the GPU memory is not enough (error == cudasuccess), reduce the batch size in `ENet/prototxt/enet_train_encoder_decoder.prototxt`.
 After training is finished you can continue with the training of encoder + decoder:
 
 	$ ENet/caffe-enet/build/tools/caffe train -solver /ENet/prototxts/enet_solver_encoder_decoder.prototxt -weights ENet/snapshots_encoder/NAME.caffemodel
