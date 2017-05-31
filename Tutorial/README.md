@@ -64,7 +64,7 @@ Now you are ready to start the training:
 
 If the GPU memory is not enough (error == cudasuccess), reduce the batch size in `ENet/prototxt/enet_train_encoder_decoder.prototxt`.
 
-After training is finished you can continue with the training of encoder + decoder:
+### After the encoder-training is finished you can continue with the training of encoder + decoder:
 
 First create the `enet_train_encoder_decoder.prototxt` by running:
 
