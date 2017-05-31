@@ -63,7 +63,14 @@ Now you are ready to start the training:
 	$ ENet/caffe-enet/build/tools/caffe train -solver /ENet/prototxts/enet_solver_encoder.prototxt
 
 If the GPU memory is not enough (error == cudasuccess), reduce the batch size in `ENet/prototxt/enet_train_encoder_decoder.prototxt`.
+
 After training is finished you can continue with the training of encoder + decoder:
+
+First create the `enet_train_encoder_decoder.prototxt` by running:
+
+	$ python create_enet_prototxt.py --source ENet/dataset/train_fine_cityscapes.txt --mode train_encoder_decoder
+
+Start the training of the encoder + decoder and use the pretrained weights as initialization of the encoder:
 
 	$ ENet/caffe-enet/build/tools/caffe train -solver ENet/prototxts/enet_solver_encoder_decoder.prototxt -weights ENet/weights/snapshots_encoder/NAME.caffemodel
 
