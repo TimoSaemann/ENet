@@ -125,6 +125,10 @@ If you like to visualize the prediction of ENet with C++ code:
 ### Kick-start
 
 If you just want to test the quality with the trained weights in the [enet-weights-zoo](https://github.com/TimoSaemann/ENet/tree/master/enet_weights_zoo), run:
+	
+	$ sh cityscapes_weights.sh
+	
+to download the weights and then:
 
 	$ python test_segmentation.py 	--model ENet/prototxts/enet_deploy_final.prototxt \						
 					--weights ENet/enet_weights_zoo/cityscapes_weights.caffemodel \
@@ -132,56 +136,9 @@ If you just want to test the quality with the trained weights in the [enet-weigh
 					--input_image ENet/example_image/munich_000000_000019_leftImg8bit.png \
 					--out_dir ENet/example_image/
 
-You should be able to reproduce the follwing example:
+You should be able to reproduce the following example:
 
 ![Alt text](/example_image/image_enet.PNG?raw=true "image_enet")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	
-
-
 
 
 
