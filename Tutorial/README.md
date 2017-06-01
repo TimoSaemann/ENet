@@ -140,6 +140,11 @@ You should be able to reproduce the following example:
 
 ![Alt text](/example_image/image_enet.PNG?raw=true "image_enet")
 
+### Measurement of execution time
+
+To measure ENet execution time layer-by-layer run:
+
+	$ ENet/caffe-enet/build/tools/caffe time -model ENet/prototxts/enet_deploy_final.prototxt -gpu 0 -iterations 100
 
 
 [1] Ioffe, Sergey, and Christian Szegedy. "Batch normalization: Accelerating deep network training by reducing
