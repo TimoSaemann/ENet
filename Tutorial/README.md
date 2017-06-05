@@ -104,7 +104,7 @@ It also deletes the corresponding batch normalization and dropout layers from th
 You can visualize the prediction of ENet by running:
 
 	$ python test_segmentation.py 	--model ENet/final_model_weigths/bn_conv_merged_model.prototxt \
-					--weights ENet/final_model_weigths/bn_conv_merged_model.caffemodel \
+					--weights ENet/final_model_weigths/bn_conv_merged_weights.caffemodel \
 					--colours /ENet/scripts/cityscapes19.png \
 					--input_image ENet/example_image/munich_000000_000019_leftImg8bit.png \
 					--out_dir /ENet/example_image/ 
@@ -116,7 +116,7 @@ If you like to visualize the prediction of ENet with C++ code:
 
 	$ cd ENet/caffe-enet/build/examples/ENet_with_C++
 	$ ./test_segmentation 	ENet/final_model_weights/bn_conv_merged_model.prototxt \
-				ENet/final_model_weights/bn_conv_merged_model.caffemodel \
+				ENet/final_model_weights/bn_conv_merged_weights.caffemodel \
 				ENet/example_image/munich_000000_000019_leftImg8bit.png \
 				ENet/scripts/cityscapes19.png
 
