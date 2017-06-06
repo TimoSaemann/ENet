@@ -39,7 +39,6 @@ using namespace caffe;  // NOLINT(build/namespaces)
 using std::string;
 
 
-
 class Classifier {
  public:
   Classifier(const string& model_file,
@@ -56,7 +55,7 @@ class Classifier {
   void Preprocess(const cv::Mat& img,
                   std::vector<cv::Mat>* input_channels);
 
-  void Visualization(Blob<float>* output_layer, string LUT_file);
+  void Visualization(cv::Mat prediction_map, string LUT_file);
 
  private:
   shared_ptr<Net<float> > net_;
@@ -117,24 +116,36 @@ void Classifier::Predict(const cv::Mat& img, string LUT_file) {
   /* Copy the output layer to a std::vector */
   Blob<float>* output_layer = net_->output_blobs()[0];
 
-  Visualization(output_layer, LUT_file);
+  int width = output_layer->width();
+  int height = output_layer->height(); 
+  int channels = output_layer->channels();
+  int num = output_layer->num();
+
+  std::cout << "output_blob(n,c,h,w) = " << num << ", " << channels << ", "
+			  << height << ", " << width << std::endl;
+
+  // compute argmax
+  cv::Mat class_each_row (channels, width*height, CV_32FC1, const_cast<float *>(output_layer->cpu_data()));
+  class_each_row = class_each_row.t(); // transpose to make each row with all probabilities
+  cv::Point maxId;    // point [x,y] values for index of max
+  double maxValue;    // the holy max value itself
+  cv::Mat prediction_map(height, width, CV_8UC1);
+  for (int i=0;i<class_each_row.rows;i++){
+      minMaxLoc(class_each_row.row(i),0,&maxValue,0,&maxId);  
+      prediction_map.at<uchar>(i) = maxId.x;     
+  }
+
+  Visualization(prediction_map, LUT_file);
 }
 
 
-void Classifier::Visualization(Blob<float>* output_layer, string LUT_file) {
+void Classifier::Visualization(cv::Mat prediction_map, string LUT_file) {
 
-  std::cout << "output_blob(n,c,h,w) = " << output_layer->num() << ", " << output_layer->channels() << ", "
-			  << output_layer->height() << ", " << output_layer->width() << std::endl;
-
-  cv::Mat merged_output_image = cv::Mat(output_layer->height(), output_layer->width(), CV_32F, const_cast<float *>(output_layer->cpu_data()));
-  //merged_output_image = merged_output_image/255.0;
-
-  merged_output_image.convertTo(merged_output_image, CV_8U);
-  cv::cvtColor(merged_output_image.clone(), merged_output_image, CV_GRAY2BGR);
+  cv::cvtColor(prediction_map.clone(), prediction_map, CV_GRAY2BGR);
   cv::Mat label_colours = cv::imread(LUT_file,1);
   cv::cvtColor(label_colours, label_colours, CV_RGB2BGR);
   cv::Mat output_image;
-  LUT(merged_output_image, label_colours, output_image);
+  LUT(prediction_map, label_colours, output_image);
 
   cv::imshow( "Display window", output_image);
   cv::waitKey(0);
@@ -229,5 +240,4 @@ int main(int argc, char** argv) {
   LOG(FATAL) << "This example requires OpenCV; compile with USE_OPENCV.";
 }
 #endif  // USE_OPENCV
-
 
