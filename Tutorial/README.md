@@ -24,6 +24,7 @@ Please make sure that the python layer (spatial_dropout.py) is defined in your P
 ## Preparation
 
 Please download the fine labeled Cityscapes dataset __leftImg8bit_trainvaltest.zip (11GB)__ and the corresponding ground truth __gtFine_trainvaltest.zip (241MB)__ from the [Cityscapes website](https://www.cityscapes-dataset.com).
+After that run the `/preparation/createTrainIdLabelImags.py` script, to convert annotations in polygonal format to png images with label IDs, where pixels encode "train IDs" (that you can define in `labels.py`). Since we use the default 19 classes, you do not need to change anything in the `labels.py` script.
 The input data layer which is used requires a text file of white-space separated paths to the images and the corresponding ground truth.
 For this reason, please modify `ENet/dataset/train_fine_cityscapes.txt` to your absolute path of the data.
 
