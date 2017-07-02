@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
             labels = cv2.imread(columns[1], 0)
             for i in xrange(args.num_classes):
-                if ((labels == i).sum()) == 0:
+                if (np.sum((labels == i))) == 0:    
                     pass
                 else:
                     classes[i] += (labels == i).sum()  # sum up all pixels that belongs to a certain class
