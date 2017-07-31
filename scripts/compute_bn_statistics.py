@@ -168,6 +168,8 @@ def make_parser():
     p.add_argument('train_model')
     p.add_argument('weights')
     p.add_argument('out_dir')
+    p.add_argument('input_width', type=int, default='1024')
+    p.add_argument('input_height', type=int, default='512')
     return p
 
 
@@ -193,7 +195,7 @@ if __name__ == '__main__':
     train_size = len(train_ims)
     minibatch_size = testable_msg.layer[0].dense_image_data_param.batch_size
     num_iterations = train_size // minibatch_size + train_size % minibatch_size
-    in_h, in_w = (512, 1024)
+    in_h, in_w = (args.input_height, args.input_width)
     test_net, test_msg, new_gamma, new_beta, conv_layers = make_test_files(BN_calc_path, args.weights, num_iterations,
                                          in_h, in_w)
 
