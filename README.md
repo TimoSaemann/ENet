@@ -21,6 +21,9 @@ For a detailed introduction on how to train and test ENet please see the [tutori
 
 This work has been published in arXiv: [`ENet: A Deep Neural Network Architecture for Real-Time Semantic Segmentation`](https://arxiv.org/abs/1606.02147).
 
+## ModelDepot
+
+Also available on [ModelDepot](https://modeldepot.io/browse).
 
 ## License
 
