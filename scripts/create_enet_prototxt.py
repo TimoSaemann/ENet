@@ -253,7 +253,7 @@ def make_parser():
     parser.add_argument('--ignore_label', type=int, default='255', help='label of ground truth that should be ignored '
                                                                         'during training')
     parser.add_argument('--num_of_classes', type=int, default='19', help='number of output classes')
-    parser.add_argument('--input_size', nargs='*', type=list, default=[512, 1024],
+    parser.add_argument('--input_size', nargs='*', type=int, default=[512, 1024],
                         help='size of input image for deploy network. [h, w]')
     parser.add_argument('--out_dir', type=str, default="/"+os.path.join(*os.path.realpath(__file__).split("/")[:-2])
                                                        + "/prototxts/", help='output directory in which the prototxt '
