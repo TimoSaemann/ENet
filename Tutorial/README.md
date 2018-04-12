@@ -99,7 +99,7 @@ speed up the network. You can do this by running:
 
 	$ python BN-absorber-enet.py 	--model ENet/prototxts/enet_deploy.prototxt \
 					--weights ENet/weights/bn_weights.caffemodel \
-					--out_dir ENet/final_model_weigths/
+					--out_dir ENet/final_model_weights/
 
 It also deletes the corresponding batch normalization and dropout layers from the prototxt file. The final model (prototxt file) and weights are saved in the folder __final_model_and_weights__. 
 
@@ -107,8 +107,8 @@ It also deletes the corresponding batch normalization and dropout layers from th
 
 You can visualize the prediction of ENet by running:
 
-	$ python test_segmentation.py 	--model ENet/final_model_weigths/bn_conv_merged_model.prototxt \
-					--weights ENet/final_model_weigths/bn_conv_merged_weights.caffemodel \
+	$ python test_segmentation.py 	--model ENet/final_model_weights/bn_conv_merged_model.prototxt \
+					--weights ENet/final_model_weights/bn_conv_merged_weights.caffemodel \
 					--colours /ENet/scripts/cityscapes19.png \
 					--input_image ENet/example_image/munich_000000_000019_leftImg8bit.png \
 					--out_dir /ENet/example_image/ 
