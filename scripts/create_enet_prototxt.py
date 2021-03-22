@@ -80,7 +80,7 @@ def bottleneck(n, prev_layer, stage, num_bottle, num_output, type, param_add=Non
         kernel_size = 2
         stride = 2
 
-    setattr(n, conv_name, L.Convolution(getattr(n, prev_layer), num_output=num_output/scale_factor, bias_term=0,
+    setattr(n, conv_name, L.Convolution(getattr(n, prev_layer), num_output=int(num_output/scale_factor), bias_term=0,
                                         kernel_size=kernel_size, stride=stride, weight_filler=dict(type='msra')))
     setattr(n, bn_name, L.BN(getattr(n, conv_name), scale_filler=dict(type='constant', value=1), bn_mode=bn_mode,
                              shift_filler=dict(type='constant', value=0.001), param=[dict(lr_mult=1, decay_mult=1),
@@ -97,23 +97,23 @@ def bottleneck(n, prev_layer, stage, num_bottle, num_output, type, param_add=Non
     prelu_name = 'prelu{}_{}_{}'.format(stage, num_bottle, module+1)
 
     if type == 'dilated':
-        setattr(n, conv_name, L.Convolution(prev_layer, num_output=num_output/scale_factor, bias_term=1, kernel_size=3,
+        setattr(n, conv_name, L.Convolution(prev_layer, num_output=int(num_output/scale_factor), bias_term=1, kernel_size=3,
                                             stride=1, pad=param_add, dilation=param_add,
                                             weight_filler=dict(type='msra')))
     elif type == 'asymmetric':
         conv_name2 = 'conv{}_{}_{}_a'.format(stage, num_bottle, module+1)
-        setattr(n, conv_name2, L.Convolution(prev_layer, num_output=num_output/scale_factor, bias_term=0,
+        setattr(n, conv_name2, L.Convolution(prev_layer, num_output=int(num_output/scale_factor), bias_term=0,
                                              kernel_h=param_add, kernel_w=1, stride=1, pad=1,
                                              weight_filler=dict(type='msra')))
-        setattr(n, conv_name, L.Convolution(getattr(n, conv_name2), num_output=num_output/scale_factor, bias_term=1,
+        setattr(n, conv_name, L.Convolution(getattr(n, conv_name2), num_output=int(num_output/scale_factor), bias_term=1,
                                             kernel_h=1, kernel_w=param_add, stride=1, pad=1,
                                             weight_filler=dict(type='msra')))
     elif type == 'upsampling':
         conv_name = 'deconv{}_{}_{}'.format(stage, num_bottle, module+1)
-        setattr(n, conv_name, L.Deconvolution(prev_layer, convolution_param=dict(num_output=num_output/scale_factor,
+        setattr(n, conv_name, L.Deconvolution(prev_layer, convolution_param=dict(num_output=int(num_output/scale_factor),
                                                                                  bias_term=1, kernel_size=2, stride=2)))
     else:
-        setattr(n, conv_name, L.Convolution(prev_layer, num_output=num_output/scale_factor, bias_term=1,
+        setattr(n, conv_name, L.Convolution(prev_layer, num_output=int(num_output/scale_factor), bias_term=1,
                                             kernel_size=3, stride=1, pad=1, weight_filler=dict(type='msra')))
 
     setattr(n, bn_name, L.BN(getattr(n, conv_name), scale_filler=dict(type='constant', value=1), bn_mode=bn_mode,
@@ -165,7 +165,7 @@ def bottleneck(n, prev_layer, stage, num_bottle, num_output, type, param_add=Non
             n.pool2_0_4 = L.Pooling(getattr(n, input_layer), kernel_size=2, stride=2, pool=P.Pooling.MAX)
 
         else:
-            print 'downsampling is just available for stage 1 and 2'
+            print ("downsampling is just available for stage 1 and 2")
 
         setattr(n, conv_name,
                 L.Convolution(getattr(n, pool_name), num_output=num_output, bias_term=0, kernel_size=1,
@@ -192,7 +192,7 @@ def bottleneck(n, prev_layer, stage, num_bottle, num_output, type, param_add=Non
         elif stage == 5:
             setattr(n, upsample_name, L.Upsample(getattr(n, bn_name), n.pool1_0_4_mask, scale=2))
         else:
-            print 'upsampling is just available for stage 4 and 5'
+            print ("upsampling is just available for stage 4 and 5")
 
         prev_layer2 = getattr(n, upsample_name)
 
@@ -284,12 +284,12 @@ if __name__ == '__main__':
     network, prev_layer = bottleneck(n, prev_layer, 1, 0, 64, 'downsampling')  # stage, number_bottleneck, num_input,
     #  type,
 
-    for i in xrange(1, 5):
+    for i in range(1, 5):
         network, prev_layer = bottleneck(n, prev_layer, 1, i, 64, 'regular')
 
     network, prev_layer = bottleneck(n, prev_layer, 2, 0, 128, 'downsampling')
 
-    for j in xrange(2, 4):
+    for j in range(2, 4):
         network, prev_layer = bottleneck(n, prev_layer, j, 1, 128, 'regular')
         network, prev_layer = bottleneck(n, prev_layer, j, 2, 128, 'dilated', 2)
         network, prev_layer = bottleneck(n, prev_layer, j, 3, 128, 'asymmetric', 5)
@@ -319,4 +319,4 @@ if __name__ == '__main__':
         f.write('name: "ENet"\n')
         f.write(str(network))
 
-    print "Done!"
+    print ("Done!")
